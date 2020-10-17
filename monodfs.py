@@ -14,25 +14,27 @@ class Monopoles(object):
                         return False 
         return True
 
-    def dfs(self, mono, room):
-        print(self.rooms)
+    def dfs(self, mono):
         mono = mono + 1
         if mono > self.m:
-            return True
+            print("solved")
+            return []
 
-        if not self.compatible(mono, room):
-            return False
+        possible = [i for i in range(self.n) if self.compatible(mono, i)]
 
-        for room in range(self.n):
-            placement = self.dfs(mono, room)
-            if placement:
-                self.rooms[room].append(mono)
+        for i in possible:
+            self.rooms[i].append(mono)
+            soln = self.dfs(mono)
+            if soln != None:
+                return [i] + soln
+            self.rooms[i].pop()
 
-        return False
+        return None
 
     def solve(self):
-        if self.dfs(0, 0):
-            return True
+        soln = self.dfs(0)
+        if soln != None:
+            print(soln)
 
 parser = argparse.ArgumentParser(description='Monopoles Sover.')
 parser.add_argument('-m', type=int, help='monopoles')
@@ -40,5 +42,4 @@ parser.add_argument('-n', type=int, help='rooms')
 args = parser.parse_args()
 
 monopoles = Monopoles(args.m, args.n)
-if monopoles.solve():
-    print("solved")
+monopoles.solve()
