@@ -22,7 +22,7 @@ class Monopoles(object):
         return True
 
     # With help from Bart Massey's code at https://github.com/pdx-cs-ai/slider
-    # Difference being no state saving because a state cannot be had more than once
+    # Difference being no state saving because a state cannot be reached more than once
     # A monopole is placed at each turn therefore mono == depth
     def dfs(self, mono):
         mono = mono + 1
@@ -46,6 +46,8 @@ class Monopoles(object):
         # not satisfied in any rooms
         return None
 
+    # The soln is a list of rooms picked in order (e.g. [0,2,1] means that
+    # monopole 1 is in first room, 2 is in third room and 3 is in second room)
     def show(self, soln):
         print("")
         if soln == None:

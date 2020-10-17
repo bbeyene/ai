@@ -3,7 +3,7 @@
 
 A complete depth-first search that attempts to place m monopoles (1…m) into n rooms, where no pairs add to equal another in the same room, e.g. if (1, 2) were in room 1, then (3) must be in another room.
 
-I started by studing Bart Massey's 'Sliding Tile Puzzle Solver' which used a dfs. Here, no state information needs to be saved explicitly because no state can be arrived to while traversing rooms. The following was scribbled on paper before I understood the problem ...
+I started by studing Bart Massey's 'Sliding Tile Puzzle Solver' which used a dfs. Here, no state information needs to be saved explicitly because no state can be revisited while traversing possibilites. The following was scribbled on paper before I understood the problem ...
 
 > while current != n
 >>	depth = 0
