@@ -4,7 +4,7 @@
 # CS441 Artificial Intelligence HW1
 import sys
 
-# A list of lists (rooms of monopoles) with dfs solver
+# A list of lists (rooms of monopoles) with a dfs solver
 class Monopoles(object):
     def __init__(self, m, n):
         self.m = m 
