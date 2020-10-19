@@ -70,7 +70,8 @@ class Monopoles(object):
     # solve using dfs, test and show the solution
     def solve(self):
         soln = self.dfs()
-        self.test_soln(soln)
+        if soln != None:
+            self.test_soln(soln)
         self.show(soln)
 
 # m: number of monopoles
