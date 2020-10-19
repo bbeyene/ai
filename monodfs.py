@@ -4,7 +4,8 @@
 # CS441 Artificial Intelligence HW1
 import sys
 
-# A list of lists (rooms of monopoles) with a dfs solver
+# Rooms of monopoles (list of lists) with a dfs solver
+# to place m monopoles in n rooms
 class Monopoles(object):
     def __init__(self, m, n):
         self.m = m 
@@ -22,9 +23,9 @@ class Monopoles(object):
         return True
 
     # With help from Bart Massey's code at https://github.com/pdx-cs-ai/slider
-    # Difference being no state saving because a state cannot be reached more than once
+    # Difference being no stop list because a state cannot be reached more than once
     # A monopole is placed at each turn therefore mono == depth
-    def dfs(self, mono):
+    def dfs(self, mono=0):
         mono = mono + 1
         if mono > self.m:
             # The last monopole was placed compatibly -> done
@@ -60,9 +61,16 @@ class Monopoles(object):
                 print(row)
         print("")
 
-    # solve using dfs starting with monopole 0
+    # Make sure solution is valid (no X + Y = Z in any room unless X = Y)
+    def test_soln(self, soln):
+        for i in range(self.n):
+            for j in range(len(self.rooms[i])):
+                assert self.compatible(self.rooms[i][j], i)
+
+    # solve using dfs, test and show the solution
     def solve(self):
-        soln = self.dfs(0)
+        soln = self.dfs()
+        self.test_soln(soln)
         self.show(soln)
 
 # m: number of monopoles
