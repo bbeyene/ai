@@ -27,8 +27,14 @@ for m in range(M):
 for m in range(M):
     clause([-L(m, n) for n in range(N)])
 
-for m in range(M):
-    clause([-L(m, n) for n in range(N) if m1 != m2])
+for n in range(N):
+    for m1 in range(M):
+        for m2 in range(m1):
+            if m1 != m2 and m1 + m2 + 2 <= M:
+                sums = []
+                sums.append([m2+1, m1+1, m1 + m2 + 2])
+                for s in sums:
+                    clause([-L(s[1]-1, n), -L(s[0]-1, n), -L(s[2]-1, n)])
 
 
 # Emit the problem description.
