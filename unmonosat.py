@@ -13,16 +13,16 @@ from sys import argv, stdin
 M = int(argv[1]) # number of monopoles
 N = int(argv[2]) # number of rooms
 
-# Test function: Check if a number can be in a room
-def compatible(mono, room):
-    for i in rooms[room]:
-        for j in rooms[room]:
-            if (i + j) == mono:
-                if i != j:
+# Test function: Check if a number can be in a room (no X + Y = Z in a room unless X = Y)
+def compatible(z, room):
+    for x in rooms[room]:
+        for y in rooms[room]:
+            if (x + y) == z:
+                if x != y:
                     return False 
     return True
 
-# Test function: Make sure solution is valid (no X + Y = Z in any room unless X = Y)
+# Test function: Make sure solution is valid
 def test_soln(rooms):
     for i in range(N):
         for j in range(len(rooms[i])):
@@ -44,7 +44,7 @@ if header == "SAT":
     solution = [int(b) for b in next(stdin).split() if int(b) > 0]
 
     rooms = [[] for n in range(N)]
-    
+
     # Place satisfied monopoles into rooms
     for s in solution:
         (m, n) = locate(s)
@@ -58,7 +58,6 @@ if header == "SAT":
         for j in range(len(rooms[i])):
             row += str(rooms[i][j]) + " "
         print(row)
-
 
 elif header == "UNSAT":
     print(header)
