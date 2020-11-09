@@ -30,4 +30,6 @@ L(1,2) = 5; L(2,2) = 6; L(3,2) = 7; L(4,2) = 8;
 
 Minisat's output for this instance was `1 2 -3 -4 -5 -6 7 8`. I keep the `true` (positive) values (`1 2 7 8) then reverse the L function for `(m,n)` pairs: ((1, 0) (2, 0) (3, 1) (4, 1)) giving monopoles 1 and 2 are in the first, and 3 and 4 are in the second.
 
+When M = 53 and N = 4, dfs took several minutes whereas minisat takes 10's of milliseconds. Awesome!
+
 
