@@ -7,10 +7,10 @@
 # Bruh Beyene
 # CS441 Artificial Intelligence HW2
 
-import sys
+from sys import argv
 
-M = int(sys.argv[1]) # number of monopoles
-N = int(sys.argv[2]) # number of rooms
+M = int(argv[1]) # number of monopoles
+N = int(argv[2]) # number of rooms
 
 # Given M monopoles and N rooms, return the atom
 # corresponding to L[m][n]
