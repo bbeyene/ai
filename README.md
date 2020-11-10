@@ -2,13 +2,13 @@
 ### Bruh Beyene
 
 ### encoder:
-`./monosat m n > encoded_prob`
+`./monosat.py m n > encoded_prob`
 
 ### minisat:
 `minisat encoded_prob encoded_soln`
 
 ### decoder:
-`./unmonosat m n < encoded_soln`
+`./unmonosat.py m n < encoded_soln`
 
 The formal encoding of Monopoles had three parts:
 

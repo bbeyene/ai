@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 # A decoder that takes as arguments the number of monopoles m and number of rooms n 
-# and takes a minisat output from a Monopoles run on standard input. For a satisfying 
-# assignment it outputs the line SAT followed by a line containing the variables of 
-# the solution in a DIMACS-like format.
+# and takes a minisat output from a Monopoles run on standard input. Outputs rooms 
+# of monopoles or "UNSAT" if unsatisfiable.
 # Problem: part one of Monopoles found at https://www.drdobbs.com/monopoles/184411053
 # Referenced Bart Massey's sudoku-sat-py/sudokusolve.py
 # Bruh Beyene
