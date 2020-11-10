@@ -24,7 +24,7 @@ I started by studying and using Bart Massey's sudoku-sat-py and its boilerplate 
 ... where,
 - (1 v 5) ^ (2 v 6) ^ (3 v 7) ^ (4 v 8) satisfies (A)
 - (~1 v ~5) ^ (~2 v ~6) ^ (~3 v ~7) ^ (~4 v ~8) satisfies (B)
-- (~1 v ~2 v ~2) ^ (~1 v ~3 v ~4) ^ (~5 v ~6 v ~7) ^ (~5 v ~7 v ~8) satisfies (C)
+- (~1 v ~2 v ~3) ^ (~1 v ~3 v ~4) ^ (~5 v ~6 v ~7) ^ (~5 v ~7 v ~8) satisfies (C)
 
 (C) was the most difficult to program as I was doubling up on clauses or getting off-by-one bugs but I eventually found a way by looping on a subset instead of all of M in the inner loop and by calculating the sums with the offset before using the 'location' function.
 
