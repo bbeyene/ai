@@ -29,8 +29,11 @@ for m in range(M):
     clause([L(m, n) for n in range(N)])
 
 # No monopole is in two rooms
+# Taken from Bart Massey's class demo - previous version had an edge case I had neglected
 for m in range(M):
-    clause([-L(m, n) for n in range(N)])
+    for n1 in range(N):
+        for n2 in range(n1+1, N):
+                clause([-L(m, n1), -L(m, n2)])
 
 # No sum of two monopoles is in a room with both of its summands
 for n in range(N):

@@ -34,4 +34,4 @@ To decode it, I keep the `true` (positive) values `1 2 7 8` then reverse the L f
 
 When M = 53 and N = 4, dfs took several minutes whereas minisat takes 10's of milliseconds. Awesome!
 
-
+Newer (B) clauses generator fixed edge case bug where M = 2, N = 1 was UNSAT thanks to Bart's demonstration in class.
