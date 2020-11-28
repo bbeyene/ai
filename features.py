@@ -7,6 +7,7 @@ import os, math, sys
 
 # Read the words of each paragraph from the four novels into memory
 # Strip away leading and trailing punctuation 
+# Inspired by Bart Massey's paragraph.py
 def novel(fname):
     with open(fname, "r") as f:
         pars = list()
@@ -27,6 +28,7 @@ def novel(fname):
 # Remove internal punctuation, keep hyphenated, convert to lowercase
 # Ignore words less than 4 letters, discard titles
 # Reduce to set of unique words in paragraph
+# Inspired by Bart Massey's paragraph.py and vocab.py
 def construct(novel, corpus_words):
 
     def alphas(w): 
@@ -79,9 +81,9 @@ def calc_gains(words, paragraphs):
         total_pars += len(nov)
 
     def calc_entropy(matrix, total_pars):
-        # split word ununsed/used
-        nNeg = matrix[0][0] + matrix[0][1] # the feature = 0 split
-        nPos = matrix[1][0] + matrix[1][1] # the feature = 1 split
+        # split (paragraphs that do vs. don't have feature)
+        nNeg = matrix[0][0] + matrix[0][1] # word unused split
+        nPos = matrix[1][0] + matrix[1][1] # word used split
 
         # word unused class entropy: feature = 0, author 0/1
         prNeg_0 = matrix[0][0] / nNeg
@@ -122,12 +124,12 @@ def calc_gains(words, paragraphs):
                 else:
                     matrix[1][author] += 1
 
-        # The matrix represents:
         """
-        print(f'{word} is not used by author 0 {matrix[0][0]} times')
-        print(f'{word} is not used by author 1 {matrix[0][1]} times')
-        print(f'{word} is used by author 0 {matrix[1][0]} times')
-        print(f'{word} is used by author 1 {matrix[1][1]} times')
+        # The matrix represents:
+        f'{word} is NOT used by author 0 {matrix[0][0]} times'
+        f'{word} is NOT used by author 1 {matrix[0][1]} times'
+        f'{word} IS used by author 0 {matrix[1][0]} times'
+        f'{word} IS used by author 1 {matrix[1][1]} times'
         """
         G = calc_entropy(matrix, total_pars) 
         word_gains[word] = G
@@ -167,7 +169,7 @@ features = [] # nfeatures highest-gain words to use as features of paragraphs
 for fname in sys.argv[1:]:
     paragraphs.append(label(fname, construct(novel(fname), corpus_words)))
 
-# Calculate and pick best spliting words based on gain
+# Calculate and pick best words to split on based on gain, (-1 < G < 0)
 word_gains = calc_gains(corpus_words, paragraphs)
 sorted_wg = sorted(word_gains.items(), key=lambda item: item[1], reverse=True)[0:nfeatures]
 for w, g in sorted_wg:
