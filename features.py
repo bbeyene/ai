@@ -1,14 +1,16 @@
-# CS441 Bruh Beyene
+#!/usr/bin/python3
+# CS441 - Bruh Beyene
 # HW3 - Author Identification by Machine Learning 
-# This module builds booleanized instances for use in Bart Massey's ID3 machine learning code
+# This module builds booleanized instances for use in Bart Massey's machine learners
 # to discriminate between paragraphs written by two quite different authors.
 
 import os, math, sys
 
-# Read the words of each paragraph from the four novels into memory
+# Read words of each paragraph from the four novels 
 # Strip away leading and trailing punctuation 
 # Inspired by Bart Massey's paragraph.py
 def novel(fname):
+
     with open(fname, "r") as f:
         pars = list()
         par = list()
@@ -25,22 +27,23 @@ def novel(fname):
 
         return pars
 
+
 # Remove internal punctuation, keep hyphenated, convert to lowercase
-# Ignore words less than 4 letters, discard titles
-# Reduce to set of unique words in paragraph
-# Inspired by Bart Massey's paragraph.py and vocab.py
+# Ignore words less than 2 letters, discard titles, remove dashes
+# Reduce to set of unique words in paragraph, create unique word dictionary
+# Inspired by Bart Massey's vocab.py
 def construct(novel, corpus_words):
 
     def alphas(w): 
         return ''.join([c for c in w if (c.lower() >= 'a' and c.lower() <= 'z') or c == '-']).lower()
 
-    discard = {'—', 'a', 'i', 's', '', 'lady', 'lord', 'madam', 'madame', 'miss' 'mr', 'mrs', 'sir', 'the'}
+    discard = {  'the', 'lady', 'lord', 'madam', 'madame', 'miss', 'mr', 'mrs', 'sir' }
     pars = list()
     for paragraph in novel:
         allwords = set()
         for sentence in paragraph:
             words = sentence.replace('--', ' ').split()
-            justwords = {alphas(w) for w in words if len(w) > 4}
+            justwords = {alphas(w) for w in words if len(w) > 2} # removes titles and '', '-', '—', 's', 'i', 'a', etc
             allwords |= justwords
             allwords -= discard
             corpus_words |= allwords
@@ -52,6 +55,7 @@ def construct(novel, corpus_words):
 
 # Label with unique paragraph identifier and author class (1 = Shelley, 0 = Austen).
 def label(fname, novel):
+
     label = None
     labeled = list()
     split_fname = fname.split()
@@ -73,86 +77,85 @@ def label(fname, novel):
 
 
 # Calculate information gain of splitting paragraphs on words using entropy equations
-def calc_gains(words, paragraphs):
+# G = initial_entropy - split_entropy
+def entropy(matrix, total_pars):
+
+    # calculate class entropy: feature = 0
+    nNeg = matrix[0][0] + matrix[0][1] # times word not used
+
+    # author = 0
+    prNeg_0 = matrix[0][0] / nNeg 
+    try: lg_0 = math.log(prNeg_0, 2)
+    except: lg_0 = 0
+    # author = 1
+    prNeg_1 = matrix[0][1] / nNeg 
+    try: lg_1 = math.log(prNeg_1, 2)
+    except: lg_1 = 0
+
+    Uneg = -prNeg_0 * lg_0 - prNeg_1 * lg_1
+
+    # calculate class entropy: feature = 1
+    nPos = matrix[1][0] + matrix[1][1] # times word used
+
+    # author = 0
+    prPos_0 = matrix[1][0] / nPos
+    try: lg_0 = math.log(prPos_0, 2)
+    except: lg_0 = 0
+    # author = 1
+    prPos_1 = matrix[1][1] / nPos 
+    try: lg_1 = math.log(prPos_1, 2)
+    except: lg_1 = 0
+
+    Upos = -prPos_0 * lg_0 - prPos_1 * lg_1
+
+    # entropies weighted by prob of being in that set
+    Usplit = (nNeg / total_pars * Uneg) + (nPos / total_pars * Upos)
+    return Usplit
+
+
+# Get a sorted word:gain mapping
+def gains(words, paragraphs):
 
     word_gains = dict()
     total_pars = 0
     for nov in paragraphs:
         total_pars += len(nov)
 
-    def calc_entropy(matrix, total_pars):
-        # split (paragraphs that do vs. don't have feature)
-        nNeg = matrix[0][0] + matrix[0][1] # word unused split
-        nPos = matrix[1][0] + matrix[1][1] # word used split
-
-        # word unused class entropy: feature = 0, author 0/1
-        prNeg_0 = matrix[0][0] / nNeg
-        prNeg_1 = matrix[0][1] / nNeg
-        try: lg_0 = math.log(prNeg_0, 2)
-        except: lg_0 = 0
-        try: lg_1 = math.log(prNeg_1, 2)
-        except: lg_1 = 0
-        uNeg = -prNeg_0 * lg_0 - prNeg_1 * lg_1
-
-        # word used class entropy: feature = 1, author 0/1
-        prPos_0 = matrix[1][0] / nNeg
-        prPos_1 = matrix[1][1] / nNeg
-        try: lg_0 = math.log(prPos_0, 2)
-        except: lg_0 = 0
-        try: lg_1 = math.log(prPos_1, 2)
-        except: lg_1 = 0
-        uPos = -prPos_0 * lg_0 - prPos_1 * lg_1
-
-        # weight each entropy by prob of being in that set
-        uPrime = (nNeg / total_pars * uNeg) + (nPos / total_pars * uPos)
-
-        # G = U - uPrime
-        G = -uPrime
-
-        return G
-
     for word in words:
         matrix = [[0] * 2 for i in range(2)]
         for nov in paragraphs:
             for par in nov:
                 author = int(par[1])
-                if word not in par:
-                    if author == 0:
-                        matrix[0][0] += 1
-                    else:
-                        matrix[0][1] += 1
-                else:
+                if word in par:
                     matrix[1][author] += 1
+                else:
+                    matrix[0][author] += 1
 
-        """
-        # The matrix represents:
-        f'{word} is NOT used by author 0 {matrix[0][0]} times'
-        f'{word} is NOT used by author 1 {matrix[0][1]} times'
-        f'{word} IS used by author 0 {matrix[1][0]} times'
-        f'{word} IS used by author 1 {matrix[1][1]} times'
-        """
-        G = calc_entropy(matrix, total_pars) 
+        # {word} appears: {Boolean(i)}, by author: {j} {matrix[i][j]} times
+
+        G = entropy(matrix, total_pars) 
         word_gains[word] = G
 
-    return word_gains
+    sorted_wg = sorted(word_gains.items(), key=lambda item: item[1])
+    return sorted_wg
 
 
-# For each paragraph p in the corpus, emit on standard output a comma-separated line:
-# paragraph identifier, paragraph class, and the values of the 300 features
+# For each paragraph output a comma-separated line:
+# identifier, class, and the values of the 300 features
 def output(words, paragraphs):
 
     nfeatures = len(words)
     for nov in paragraphs:
         for par in nov:
-            vector = list()
-            vector.append(par[0])
-            vector.append(int(par[1]))
+            instances = list()
+            instances.append(par[0])
+            instances.append(int(par[1]))
             for w in words:
                 if w in par:
-                    vector.append(1)
+                    instances.append(1)
                 else:
-                    vector.append(0)
-            for i, v in enumerate(vector):
+                    instances.append(0)
+            for i, v in enumerate(instances):
                 if i <= nfeatures:
                     print(v, end=', ')
                 else:
@@ -160,20 +163,19 @@ def output(words, paragraphs):
 
 
 nfeatures = 300
-paragraphs = [] # lists of comma-separated: identifier, class and unique words
+paragraphs = [] # [ 'identifier', 'class', unique-words ] per novel
 corpus_words = set() # unique words of novels
 word_gains = dict() # calculated 'word':gain of corpus words
-features = [] # nfeatures highest-gain words to use as features of paragraphs
+features = [] # nfeatures highest-gain words to use for splits
 
-# Read novels, label the paragraphs and create dictionary of unique words
+# Read novels, label paragraphs, create dictionary of unique words
 for fname in sys.argv[1:]:
     paragraphs.append(label(fname, construct(novel(fname), corpus_words)))
 
-# Calculate and pick best words to split on based on gain, (-1 < G < 0)
-word_gains = calc_gains(corpus_words, paragraphs)
-sorted_wg = sorted(word_gains.items(), key=lambda item: item[1], reverse=True)[0:nfeatures]
-for w, g in sorted_wg:
+# Calculate, sort, pick best words to split based on (-1 < G < 0)
+word_gains = gains(corpus_words, paragraphs)
+for w, g in word_gains[0:nfeatures]:
     features.append(w)
 
-# Print comma-separated feature vectors with paragraph identifier and class
+# Print instances
 output(features, paragraphs)
