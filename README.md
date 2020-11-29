@@ -3,13 +3,13 @@ This module builds booleanized instances for identifying novels written by diffe
 
 ### to run it
 
-`./features.py [ novels ... ] > instances
+`./features.py [ novels ... ] > instances`
 
 where novels might be any/all ...
-> `../hw-authors/austen-northanger-abbey.txt,`
-> `../hw-authors/austen-pride-and-prejudice.txt,`
-> `../hw-authors/shelley-frankenstein.txt,`
-> `../hw-authors/shelley-the-last-man.txt`
+> ../hw-authors/austen-northanger-abbey.txt
+> ../hw-authors/austen-pride-and-prejudice.txt
+> ../hw-authors/shelley-frankenstein.txt
+> ../hw-authors/shelley-the-last-man.txt
 
 I followed the steps in the assignment description. First, I read the words of each paragraph from the four novels into memory as a list of lists of paragraphs per author. I used the cleaned up novels in Bart's `hw-authors/` corpus which discards names, headers and front/back matter. From those, features.py keeps or removes words based on some criteria, converts each paragraph to be the set of unique words present in the paragraph, then labels it with a unique paragraph identifier and the author class (1 = Shelley, 0 = Austen). It constructs a dictionary of words and maps each word to a gain by calculating the entropy of splitting paragraphs on the word. I the sort and select the 300 highest-gain words to use as features of a paragraph.
 

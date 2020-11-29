@@ -4,7 +4,7 @@
 # This module builds booleanized instances for use in Bart Massey's machine learners
 # to discriminate between paragraphs written by two quite different authors.
 
-import os, math, sys
+import math, os, sys
 
 # Read words of each paragraph from the four novels 
 # Strip away leading and trailing punctuation 
