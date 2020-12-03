@@ -33,17 +33,20 @@ def novel(fname):
 # Inspired by Bart Massey's vocab.py
 def construct(novel, corpus_words):
 
+    # removes titles, some single letters
     def alphas(w): 
         return ''.join([c for c in w if (c.lower() >= 'a' and c.lower() <= 'z') or c == '-']).lower()
-
+    
+    letter_count = 1 # test different sized words
     discard = { '', '-', '—', 's', 'i', 'a', 'the', 'lady', 'lord', 'madam', 'madame', 'miss', 'mr', 'mrs', 'sir' }
     pars = list()
     for paragraph in novel:
         allwords = set()
         for sentence in paragraph:
             words = sentence.replace('--', ' ').split()
-            justwords = {alphas(w) for w in words} # removes titles, single letters
-            allwords |= justwords
+            justwords = {alphas(w) for w in words} 
+            sizewords = {w for w in justwords if len(w) > letter_count}
+            allwords |= sizewords 
             allwords -= discard
             corpus_words |= allwords
         if allwords is not None:
