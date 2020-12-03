@@ -10,7 +10,6 @@ import math, os, sys
 # Strip away leading and trailing punctuation 
 # Inspired by Bart Massey's paragraph.py
 def novel(fname):
-
     with open(fname, "r") as f:
         pars = list()
         par = list()
@@ -37,19 +36,19 @@ def construct(novel, corpus_words):
     def alphas(w): 
         return ''.join([c for c in w if (c.lower() >= 'a' and c.lower() <= 'z') or c == '-']).lower()
 
-    discard = {  'the', 'lady', 'lord', 'madam', 'madame', 'miss', 'mr', 'mrs', 'sir' }
+    discard = { '', '-', '—', 's', 'i', 'a', 'the', 'lady', 'lord', 'madam', 'madame', 'miss', 'mr', 'mrs', 'sir' }
     pars = list()
     for paragraph in novel:
         allwords = set()
         for sentence in paragraph:
             words = sentence.replace('--', ' ').split()
-            justwords = {alphas(w) for w in words if len(w) > 2} # removes titles and '', '-', '—', 's', 'i', 'a', etc
+            justwords = {alphas(w) for w in words} # removes titles, single letters
             allwords |= justwords
             allwords -= discard
             corpus_words |= allwords
         if allwords is not None:
             pars.append(allwords)
-
+        
     return pars
 
 
@@ -67,10 +66,12 @@ def label(fname, novel):
     
     for i, paragraph in enumerate(novel):
         par = list()
+        feats = set()
         par.append(f'{identifier}.{i}')
         par.append(f'{label}') 
         for word in paragraph:
-            par.append(word)
+            feats.add(word)
+        par.append(feats)
         labeled.append(par)
 
     return labeled
@@ -112,21 +113,20 @@ def entropy(matrix, total_pars):
     Usplit = (nNeg / total_pars * Uneg) + (nPos / total_pars * Upos)
     return Usplit
 
-
 # Get a sorted word:gain mapping
 def gains(words, paragraphs):
-
     word_gains = dict()
     total_pars = 0
     for nov in paragraphs:
         total_pars += len(nov)
 
-    for word in words:
+    for w in words:
         matrix = [[0] * 2 for i in range(2)]
         for nov in paragraphs:
             for par in nov:
                 author = int(par[1])
-                if word in par:
+                p = par[2]
+                if w in p:
                     matrix[1][author] += 1
                 else:
                     matrix[0][author] += 1
@@ -134,7 +134,7 @@ def gains(words, paragraphs):
         # {word} appears: {Boolean(i)}, by author: {j} {matrix[i][j]} times
 
         G = entropy(matrix, total_pars) 
-        word_gains[word] = G
+        word_gains[w] = G
 
     sorted_wg = sorted(word_gains.items(), key=lambda item: item[1])
     return sorted_wg
@@ -147,15 +147,15 @@ def output(words, paragraphs):
     nfeatures = len(words)
     for nov in paragraphs:
         for par in nov:
-            instances = list()
-            instances.append(par[0])
-            instances.append(int(par[1]))
+            instance = list()
+            instance.append(par[0])
+            instance.append(int(par[1]))
             for w in words:
-                if w in par:
-                    instances.append(1)
+                if w in par[2]:
+                    instance.append(1)
                 else:
-                    instances.append(0)
-            for i, v in enumerate(instances):
+                    instance.append(0)
+            for i, v in enumerate(instance):
                 if i <= nfeatures:
                     print(v, end=', ')
                 else:
@@ -163,7 +163,7 @@ def output(words, paragraphs):
 
 
 nfeatures = 300
-paragraphs = [] # [ 'identifier', 'class', unique-words ] per novel
+paragraphs = [] # [ 'identifier', 'class', unique-words ... ] per novel
 corpus_words = set() # unique words of novels
 word_gains = dict() # calculated 'word':gain of corpus words
 features = [] # nfeatures highest-gain words to use for splits
