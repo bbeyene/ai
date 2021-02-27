@@ -1,0 +1,10 @@
+acc:0.812 fpr:0.030  fnr:0.158
+acc:0.739 fpr:0.060  fnr:0.202
+acc:0.784 fpr:0.044  fnr:0.172
+acc:0.759 fpr:0.044  fnr:0.197
+acc:0.794 fpr:0.021  fnr:0.186
+acc:0.784 fpr:0.034  fnr:0.181
+acc:0.796 fpr:0.048  fnr:0.156
+acc:0.837 fpr:0.030  fnr:0.133
+acc:0.800 fpr:0.032  fnr:0.167
+acc:0.791 fpr:0.033  fnr:0.177
