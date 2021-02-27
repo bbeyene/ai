@@ -128,8 +128,7 @@ def gains(words, paragraphs):
         for nov in paragraphs:
             for par in nov:
                 author = int(par[1])
-                p = par[2]
-                if w in p:
+                if w in par[2]:
                     matrix[1][author] += 1
                 else:
                     matrix[0][author] += 1
